@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Listening Room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Satisfy&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --bg:             #1c1510;
+      --surface:        #211a12;
+      --border:         #2e2318;
+      --accent:         #9a7a50;
+      --accent-muted:   #6b5640;
+      --text:           #f0e4d0;
+      --text-secondary: #b8a080;
+      --text-muted:     #6b5640;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ─────────────────────────────────────────────────────── */
+    .hero {
+      background: var(--bg);
+      text-align: center;
+      padding: 64px 24px 40px;
+    }
+
+    .hero-title {
+      font-family: 'Satisfy', cursive;
+      font-size: clamp(2.4rem, 7vw, 4.5rem);
+      font-weight: 400;
+      color: var(--text);
+      margin: 0 0 14px;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-sub {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 15px;
+      color: var(--text-muted);
+      margin: 0 0 32px;
+      letter-spacing: 0.03em;
+    }
+
+    .hero-rule {
+      width: 64px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent-muted), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(28, 21, 16, 0.97);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 18px 28px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.25s, border-color 0.25s;
+      white-space: nowrap;
+    }
+
+    .nav-link.active             { color: var(--accent); border-bottom-color: var(--accent); }
+    .nav-link:hover:not(.active) { color: var(--text-secondary); }
+
+    @media (max-width: 480px) {
+      .nav-link { padding: 14px 10px; font-size: 10px; letter-spacing: 0.1em; }
+    }
+
+    /* ── SECTION CHROME ───────────────────────────────────────────── */
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .section-label {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      text-align: center;
+      margin: 0 0 10px;
+    }
+
+    .section-subtitle {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #8a7060;
+      text-align: center;
+      margin: 0 0 52px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── CARD GRID ────────────────────────────────────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 768px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .card-grid { grid-template-columns: 1fr; } }
+
+    /* ── SONG CARD ────────────────────────────────────────────────── */
+    .song-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 22px 20px 20px;
+      cursor: pointer;
+      transition: border-color 0.3s;
+      position: relative;
+    }
+
+    .song-card:hover        { border-color: var(--accent-muted); }
+    .song-card.her-card     { background: #241c13; }
+    .song-card.no-expand    { cursor: default; }
+    .song-card.no-expand:hover { border-color: var(--border); }
+
+    /* top-5 dot */
+    .card-dot {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.7;
+    }
+
+    .vinyl-icon {
+      width: 44px;
+      height: 44px;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+
+    /* card hint — collapses when open */
+    .card-hint-wrap {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.35s ease, opacity 0.3s ease;
+      opacity: 0.45;
+    }
+
+    .card-hint-inner { overflow: hidden; }
+
+    .card-hint {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-bottom: 2px;
+    }
+
+    .song-card.open .card-hint-wrap {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+
+    /* card note — expands when open */
+    .card-note-wrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.42s ease, opacity 0.38s ease, margin-top 0.3s ease;
+      opacity: 0;
+      margin-top: 0;
+    }
+
+    .card-note-inner { overflow: hidden; }
+
+    .card-note {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #a08060;
+      line-height: 1.78;
+      padding-bottom: 2px;
+    }
+
+    .song-card.open .card-note-wrap {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      margin-top: 10px;
+    }
+
+    /* ── FADE-UP ENTRANCE ─────────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── PLAYER SECTION ───────────────────────────────────────────── */
+    .player-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .player-layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 56px;
+      align-items: start;
+      margin-bottom: 44px;
+    }
+
+    @media (max-width: 768px) {
+      .player-layout { grid-template-columns: 1fr; gap: 36px; }
+      .vinyl-col     { display: flex; justify-content: center; }
+    }
+
+    /* ── VINYL CANVAS ─────────────────────────────────────────────── */
+    .vinyl-wrapper {
+      position: relative;
+      width: 210px;
+      height: 210px;
+    }
+
+    #vinyl-canvas {
+      display: block;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* ── TONEARM ──────────────────────────────────────────────────── */
+    .tonearm-wrap {
+      position: absolute;
+      top: -18px;
+      right: -38px;
+      width: 80px;
+      height: 162px;
+      pointer-events: none;
+      transform: rotate(-35deg);
+      transform-origin: 65px 12px;
+    }
+
+    .tonearm-wrap.springy {
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ── PLAYER CONTROLS ──────────────────────────────────────────── */
+    .now-playing-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 5px;
+    }
+
+    .now-playing-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 21px;
+      color: var(--text);
+      margin: 0 0 3px;
+    }
+
+    .now-playing-artist {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 28px;
+    }
+
+    .progress-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      cursor: pointer;
+      margin-bottom: 7px;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      pointer-events: none;
+    }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 6px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s;
+    }
+
+    .ctrl-btn:hover { color: var(--accent); }
+
+    .play-pause-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--accent-muted) !important;
+      border-radius: 50%;
+    }
+
+    .yt-fallback {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .yt-fallback a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+    /* ── TRACK LIST ───────────────────────────────────────────────── */
+    .track-list {
+      list-style: none;
+      margin: 0; padding: 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .track-item {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 6px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .track-item:hover  { background: rgba(154,122,80,0.04); }
+    .track-item.active { background: rgba(154,122,80,0.06); }
+
+    .track-num {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .track-item.active .track-num   { color: var(--accent); }
+
+    .track-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .track-item.active .track-title { color: var(--accent); }
+
+    .track-artist {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── SIDE B ───────────────────────────────────────────────────── */
+    .side-b-inner {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 80px 24px 100px;
+    }
+
+    .side-b-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 48px 44px;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 480px) { .side-b-card { padding: 36px 24px; } }
+
+    .side-b-note {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 18px;
+      line-height: 1.9;
+      text-align: center;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .side-b-note p { margin: 0 0 1.4em; }
+    .side-b-note p:last-child { margin-bottom: 0; }
+
+    .side-b-sig {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-align: right;
+      margin: 28px 0 6px;
+    }
+
+    .side-b-sub {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <h1 class="hero-title">Our Listening Room</h1>
+  <p class="hero-sub">for my hottest homie, Courtney</p>
+  <div class="hero-rule"></div>
+</header>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#side-a"       class="nav-link active">Side A</a>
+  <a href="#her-songs"    class="nav-link">Her Songs</a>
+  <a href="#our-playlist" class="nav-link">Our Playlist</a>
+  <a href="#side-b"       class="nav-link">Side B</a>
+</nav>
+
+<!-- SECTION 1 – SIDE A -->
+<section id="side-a">
+  <div class="section-inner">
+    <p class="section-label fade-up visible">side a — the listening room</p>
+    <p class="section-subtitle fade-up visible" style="transition-delay:60ms">songs that mean something · some more than I've said</p>
+    <div class="card-grid" id="side-a-grid"></div>
+  </div>
+</section>
+
+<!-- SECTION 2 – HER SONGS -->
+<section id="her-songs">
+  <div class="section-inner">
+    <p class="section-label fade-up">your songs — what you brought</p>
+    <p class="section-subtitle fade-up" style="transition-delay:60ms">songs you brought · songs that sound like you</p>
+    <div class="card-grid" id="her-songs-grid"></div>
+  </div>
+</section>
+
+<!-- SECTION 3 – OUR PLAYLIST -->
+<section id="our-playlist">
+  <div class="player-inner">
+    <p class="section-label fade-up">our playlist</p>
+    <p class="section-subtitle fade-up" style="transition-delay:60ms">a cheeky mix of both of our favourites</p>
+
+    <div class="player-layout">
+      <!-- VINYL + TONEARM -->
+      <div class="vinyl-col">
+        <div class="vinyl-wrapper">
+          <canvas id="vinyl-canvas" width="210" height="210"></canvas>
+
+          <div class="tonearm-wrap" id="tonearm-wrap">
+            <svg width="80" height="162" viewBox="0 0 80 162" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M65 12 C63 32, 56 62, 48 92 C43 112, 38 128, 35 140"
+                    stroke="#9a7a50" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.82"/>
+              <path d="M35 140 L30 148 M35 140 L40 148"
+                    stroke="#9a7a50" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+              <circle cx="65" cy="12" r="7.5" fill="#1c1510" stroke="#9a7a50" stroke-width="1.5" opacity="0.9"/>
+              <circle cx="65" cy="12" r="3"   fill="#9a7a50" opacity="0.85"/>
+              <line x1="35" y1="148" x2="34" y2="154"
+                    stroke="#9a7a50" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="controls-col">
+        <p class="now-playing-label">now playing</p>
+        <p class="now-playing-title"  id="np-title">—</p>
+        <p class="now-playing-artist" id="np-artist">—</p>
+
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="time-row">
+          <span id="time-cur">0:00</span>
+          <span id="time-tot">0:00</span>
+        </div>
+
+        <div class="controls-row">
+          <button class="ctrl-btn" id="btn-prev" aria-label="Previous">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <rect x="1" y="2" width="2.5" height="12" rx="1"/>
+              <polygon points="14,2 5,8 14,14"/>
+            </svg>
+          </button>
+          <button class="ctrl-btn play-pause-btn" id="btn-play" aria-label="Play / Pause">
+            <svg id="icon-play"  width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><polygon points="2,1 13,7 2,13"/></svg>
+            <svg id="icon-pause" width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="display:none"><rect x="1" y="1" width="4" height="12" rx="1"/><rect x="9" y="1" width="4" height="12" rx="1"/></svg>
+          </button>
+          <button class="ctrl-btn" id="btn-next" aria-label="Next">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <rect x="12.5" y="2" width="2.5" height="12" rx="1"/>
+              <polygon points="2,2 11,8 2,14"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="yt-fallback" id="yt-fallback"></div>
+      </div>
+    </div>
+
+    <ul class="track-list" id="track-list"></ul>
+  </div>
+</section>
+
+<!-- SECTION 4 – SIDE B -->
+<section id="side-b">
+  <div class="side-b-inner">
+    <p class="section-label fade-up">side b</p>
+    <div class="side-b-card fade-up" style="transition-delay:80ms">
+      <div class="side-b-note">
+        <p>"I'm not usually the type to open up quickly. But the way you make space for me — no judgement, just room to be myself — makes it easier than it normally is.</p>
+        <p>The more I learn about you, the more I realise how much there is to learn. The confidence, the way you throw yourself into everything you care about, the fact that you actually make me laugh — you're so uniquely you, in the best way possible.</p>
+        <p>I'm glad you're a part of my life, Courtney. Genuinely."</p>
+      </div>
+      <p class="side-b-sig">— Luke</p>
+      <p class="side-b-sub">for my hottest homie, Courtney</p>
+    </div>
+  </div>
+</section>
+
+<!-- YouTube hidden player target -->
+<div id="yt-player" style="position:fixed;bottom:0;right:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;"></div>
+
+<script>
+'use strict';
+
+// ── DATA ──────────────────────────────────────────────────────────────────
+
+// top5: true marks songs that get the accent dot in the top-right corner.
+// PLACEHOLDER — update these flags once we know which 5 songs.
+const SIDE_A = [
+  { title: 'Maine',            top5: false, note: "It's impossible to hear this now and not think of you.",                                                                                                                    color: '#7a5c3a' },
+  { title: 'American Cars',    top5: false, note: "The song that initiated our first conversation. Now I'm working on a plan for us to disappear completely.",                                                                 color: '#5a4a38' },
+  { title: 'Godlight',         top5: false, note: "No words.",                                                                                                                                                                 color: '#8a6040' },
+  { title: 'Paul Revere',      top5: false, note: "You put me on to this. Now I can't go without it.",                                                                                                                         color: '#6a5248' },
+  { title: 'Doors',            top5: false, note: "And I'll sing this to you again and again.",                                                                                                                                color: '#7a6858' },
+  { title: 'Willing and Able', top5: false, note: "There's something about sitting and doing nothing with you.",                                                                                                               color: '#6a4a30' },
+  { title: 'Carlos Song',      top5: false, note: "Some people just quietly become essential.",                                                                                                                                color: '#584038' },
+  { title: 'Orbiter',          top5: false, note: "I circle you.",                                                                                                                                                             color: '#4a5040' },
+  { title: 'Tennessee Whiskey',top5: false, note: "I have a feeling this will be a nice one to dance to when you're in a white dress and I'm in a tux.",                                                                      color: '#6b5040' },
+  { title: 'Howling',          top5: false, note: "Haven't heard it yet. But if you rate it this highly, I already know.",                                                                                                     color: '#7a5c3a' }
+];
+
+const HER_SONGS = [
+  { title: 'Maine',             descriptor: 'You made this one impossible to hear without thinking of you.', color: '#7a5c3a' },
+  { title: 'Take Me Home',      descriptor: 'This was also a nice find.',          color: '#5a4838' },
+  { title: 'Paul Revere',       descriptor: 'You put me on to this. I owe you.',   color: '#8a6040' },
+  { title: 'Two Wooden Beams',  descriptor: "I'm still thinking of beans.",        color: '#6a5040' },
+  { title: 'Howling',           descriptor: 'In your top five. That says enough.', color: '#7a5c3a' },
+  { title: 'Sandpaper',         noExpand: true,                                    color: '#584038' },
+  { title: 'Tennessee Whiskey', noExpand: true,                                    color: '#6b5040' }
+];
+
+const TRACKS = [
+  { title: 'Maine',            artist: 'Noah Kahan',                        ytId: 'NogPlgO7jng', art: '#7a5c3a' },
+  { title: 'Doors',            artist: 'Noah Kahan',                        ytId: 'IAYJ4iTDkQ0', art: '#7a6858' },
+  { title: 'Forever',          artist: 'Noah Kahan',                        ytId: 'MXmQq7AkXYE', art: '#5a4a38' },
+  { title: 'Godlight',         artist: 'Noah Kahan',                        ytId: 'YWgmJmQrVIY', art: '#8a6040' },
+  { title: 'Willing and Able', artist: 'Noah Kahan',                        ytId: '2f4gu97XWFg', art: '#6a4a30' },
+  { title: 'Howling',          artist: 'Noah Kahan',                        ytId: 'oAq9C7MGwAI', art: '#7a5c3a' },
+  { title: 'Photograph',       artist: 'Ed Sheeran',                        ytId: 'nSDgHBxUbVQ', art: '#6a5248' },
+  { title: 'Rein Me In',       artist: 'Olivia Dean & Sam Fender',          ytId: '3triLkS0nq4', art: '#7a6858' },
+  { title: 'People Watching',  artist: 'Sam Fender',                        ytId: '5cXCUp6j5M8', art: '#6a4a30' },
+  { title: 'Sandpaper',        artist: 'Zach Bryan ft. Bruce Springsteen',  ytId: '3DepO9Kub6s', art: '#584038' },
+  { title: 'Tennessee Whiskey',artist: 'Chris Stapleton',                   ytId: '4zAThXFOy2c', art: '#6b5040' },
+  { title: 'Two Wooden Beams', artist: 'Josiah Queen',                      ytId: 'NYhnmpsognI', art: '#6a5040' },
+  { title: 'Take Me Home',     artist: 'Buffalo Traffic Jam',               ytId: '4-7BYRw9E6Q', art: '#5a4838' }
+];
+
+// ── ITUNES ARTWORK ────────────────────────────────────────────────────────
+
+var artworkCache = {};
+
+function artKey(artist, title) { return artist + '||' + title; }
+
+function fetchArtwork(artist, title, callback) {
+  var key = artKey(artist, title);
+  if (key in artworkCache) { if (callback) callback(artworkCache[key]); return; }
+  artworkCache[key] = null; // mark in-flight so we don't double-fetch
+  fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(artist + ' ' + title) + '&entity=song&limit=1')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.results && data.results.length > 0) {
+        var url = data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload  = function() { artworkCache[key] = img; if (callback) callback(img); };
+        img.onerror = function() { if (callback) callback(null); };
+        img.src = url;
+      } else { if (callback) callback(null); }
+    })
+    .catch(function() { if (callback) callback(null); });
+}
+
+function prefetchArtwork() {
+  TRACKS.forEach(function(t) { fetchArtwork(t.artist, t.title, null); });
+}
+
+// ── VINYL SVG ICON ────────────────────────────────────────────────────────
+
+function vinylSVG(color) {
+  return '<svg class="vinyl-icon" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">'
+    + '<circle cx="22" cy="22" r="21" fill="#0d0a07" stroke="#2e2318" stroke-width="1"/>'
+    + '<circle cx="22" cy="22" r="18" fill="none" stroke="#181310" stroke-width="0.9"/>'
+    + '<circle cx="22" cy="22" r="15" fill="none" stroke="#181310" stroke-width="0.9"/>'
+    + '<circle cx="22" cy="22" r="12" fill="none" stroke="#181310" stroke-width="0.9"/>'
+    + '<circle cx="22" cy="22" r="9"  fill="none" stroke="#181310" stroke-width="0.9"/>'
+    + '<circle cx="22" cy="22" r="7"  fill="' + color + '"/>'
+    + '<circle cx="22" cy="22" r="2"  fill="#0d0a07"/>'
+    + '</svg>';
+}
+
+// ── BUILD CARDS ───────────────────────────────────────────────────────────
+
+function buildCards(data, container, isHer) {
+  var openCard = null;
+  data.forEach(function(item, i) {
+    var noExpand = !!item.noExpand;
+    var card = document.createElement('div');
+    card.className = 'song-card fade-up'
+      + (isHer     ? ' her-card'   : '')
+      + (noExpand  ? ' no-expand'  : '');
+    card.style.transitionDelay = (i * 55) + 'ms';
+
+    var dot = (!isHer && item.top5) ? '<div class="card-dot"></div>' : '';
+
+    if (noExpand) {
+      card.innerHTML = dot
+        + vinylSVG(item.color)
+        + '<div class="card-title">' + item.title + '</div>';
+    } else {
+      var body = isHer ? item.descriptor : item.note;
+      card.innerHTML = dot
+        + vinylSVG(item.color)
+        + '<div class="card-title">' + item.title + '</div>'
+        + '<div class="card-hint-wrap"><div class="card-hint-inner"><div class="card-hint">read note ↓</div></div></div>'
+        + '<div class="card-note-wrap"><div class="card-note-inner"><div class="card-note">' + body + '</div></div></div>';
+
+      card.addEventListener('click', function() {
+        if (openCard && openCard !== card) openCard.classList.remove('open');
+        card.classList.toggle('open');
+        openCard = card.classList.contains('open') ? card : null;
+      });
+    }
+
+    container.appendChild(card);
+  });
+}
+
+buildCards(SIDE_A,    document.getElementById('side-a-grid'),    false);
+buildCards(HER_SONGS, document.getElementById('her-songs-grid'), true);
+
+// ── TRACK LIST ────────────────────────────────────────────────────────────
+
+var trackListEl = document.getElementById('track-list');
+
+TRACKS.forEach(function(t, i) {
+  var li = document.createElement('li');
+  li.className = 'track-item';
+  li.dataset.i = i;
+  li.innerHTML = '<span class="track-num">' + (i + 1) + '</span>'
+    + '<span class="track-title">'  + t.title  + '</span>'
+    + '<span class="track-artist">' + t.artist + '</span>';
+  li.addEventListener('click', function() { loadTrack(i, true); });
+  trackListEl.appendChild(li);
+});
+
+function setActiveTrackUI(index) {
+  document.querySelectorAll('.track-item').forEach(function(el, i) {
+    var active = (i === index);
+    el.classList.toggle('active', active);
+    el.querySelector('.track-num').textContent = active ? '♪' : (i + 1);
+  });
+  document.getElementById('np-title').textContent  = TRACKS[index].title;
+  document.getElementById('np-artist').textContent = TRACKS[index].artist;
+}
+
+// ── VINYL CANVAS ──────────────────────────────────────────────────────────
+
+var vinylCanvas = document.getElementById('vinyl-canvas');
+var vctx        = vinylCanvas.getContext('2d');
+var CX = 105, CY = 105, R = 103;
+
+var angle    = 0;
+var angVel   = 0;
+var spinning = false;
+var rafId    = null;
+var TARGET_VEL = (2 * Math.PI * 0.5) / 60;
+
+function drawVinyl(labelColor, title, artist, artImg) {
+  vctx.clearRect(0, 0, 210, 210);
+  vctx.save();
+  vctx.translate(CX, CY);
+  vctx.rotate(angle);
+
+  vctx.beginPath();
+  vctx.arc(0, 0, R, 0, Math.PI * 2);
+  vctx.fillStyle = '#0c0906';
+  vctx.fill();
+
+  for (var gr = 18; gr < 94; gr += 3.2) {
+    vctx.beginPath();
+    vctx.arc(0, 0, gr, 0, Math.PI * 2);
+    vctx.strokeStyle = 'rgba(255,255,255,0.032)';
+    vctx.lineWidth   = 0.8;
+    vctx.stroke();
+  }
+
+  // centre label — artwork or flat colour
+  vctx.save();
+  vctx.beginPath();
+  vctx.arc(0, 0, 30, 0, Math.PI * 2);
+  vctx.clip();
+  if (artImg && artImg.complete && artImg.naturalWidth > 0) {
+    vctx.drawImage(artImg, -30, -30, 60, 60);
+    vctx.fillStyle = 'rgba(0,0,0,0.2)';
+    vctx.fillRect(-30, -30, 60, 60);
+  } else {
+    vctx.fillStyle = labelColor;
+    vctx.fill();
+  }
+  vctx.restore();
+  vctx.beginPath();
+  vctx.arc(0, 0, 30, 0, Math.PI * 2);
+  vctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  vctx.lineWidth   = 1;
+  vctx.stroke();
+
+  vctx.rotate(-angle);
+  vctx.textAlign    = 'center';
+  vctx.textBaseline = 'middle';
+  vctx.font         = '600 7px Jost, sans-serif';
+  vctx.fillStyle    = 'rgba(240,228,208,0.75)';
+  var t = title.length > 11 ? title.slice(0, 11) : title;
+  vctx.fillText(t, 0, -5);
+  vctx.font      = '300 6px Jost, sans-serif';
+  vctx.fillStyle = 'rgba(240,228,208,0.48)';
+  vctx.fillText(artist.split(' ')[0], 0, 5);
+
+  vctx.restore();
+
+  vctx.beginPath();
+  vctx.arc(CX, CY, 2.5, 0, Math.PI * 2);
+  vctx.fillStyle = '#0c0906';
+  vctx.fill();
+}
+
+function animLoop() {
+  if (spinning) {
+    angVel += (TARGET_VEL - angVel) * 0.06;
+  } else {
+    angVel *= 0.95;
+  }
+  angle += angVel;
+
+  var t      = TRACKS[currentTrackIndex];
+  var artImg = artworkCache[artKey(t.artist, t.title)] || null;
+  drawVinyl(t.art, t.title, t.artist, artImg);
+  tonearmDirect();
+
+  if (spinning || angVel > 0.0008) {
+    rafId = requestAnimationFrame(animLoop);
+  } else {
+    angVel = 0;
+    drawVinyl(t.art, t.title, t.artist, artImg);
+    tonearmDirect();
+    rafId = null;
+  }
+}
+
+function startSpin() {
+  spinning = true;
+  if (!rafId) rafId = requestAnimationFrame(animLoop);
+}
+
+function stopSpin() {
+  spinning = false;
+  if (!rafId) rafId = requestAnimationFrame(animLoop);
+}
+
+// ── TONEARM ───────────────────────────────────────────────────────────────
+
+var tonearmWrap          = document.getElementById('tonearm-wrap');
+var tonearmTransitioning = false;
+
+function tonearmDirect() {
+  if (tonearmTransitioning) return;
+  var deg = -35;
+  if (ytPlayer && isPlaying) {
+    try {
+      var dur = ytPlayer.getDuration();
+      var cur = ytPlayer.getCurrentTime();
+      if (dur > 0) deg = -28 + (cur / dur) * 40;
+    } catch (e) {}
+  }
+  tonearmWrap.style.transition = 'none';
+  tonearmWrap.style.transform  = 'rotate(' + deg + 'deg)';
+}
+
+function tonearmSpringy(deg) {
+  tonearmTransitioning = true;
+  tonearmWrap.classList.add('springy');
+  tonearmWrap.style.transform = 'rotate(' + deg + 'deg)';
+  setTimeout(function() {
+    tonearmTransitioning = false;
+    tonearmWrap.classList.remove('springy');
+  }, 720);
+}
+
+// ── YOUTUBE ───────────────────────────────────────────────────────────────
+
+var ytPlayer          = null;
+var ytReady           = false;
+var isPlaying         = false;
+var currentTrackIndex = 0;
+var pendingLoad       = null;
+
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '1', width: '1',
+    videoId: TRACKS[0].ytId,
+    playerVars: { autoplay: 0, controls: 0, rel: 0, modestbranding: 1, playsinline: 1 },
+    events: {
+      onReady:       onPlayerReady,
+      onStateChange: onPlayerStateChange,
+      onError:       onPlayerError
+    }
+  });
+};
+
+function onPlayerReady() {
+  ytReady = true; // only true once the player's iframe is interactive
+  if (pendingLoad) { pendingLoad(); pendingLoad = null; }
+  startProgressPoll();
+}
+
+function onPlayerStateChange(e) {
+  if (e.data === YT.PlayerState.PLAYING) {
+    isPlaying = true;
+    setPlayIcon(true);
+    startSpin();
+    tonearmSpringy(-28);
+  } else if (e.data === YT.PlayerState.PAUSED) {
+    isPlaying = false;
+    setPlayIcon(false);
+    stopSpin();
+    tonearmSpringy(-35);
+  } else if (e.data === YT.PlayerState.ENDED) {
+    nextTrack();
+  }
+}
+
+function onPlayerError() {
+  var t = TRACKS[currentTrackIndex];
+  document.getElementById('yt-fallback').innerHTML =
+    '<a href="https://www.youtube.com/watch?v=' + t.ytId + '" target="_blank" rel="noopener">open in youtube ↗</a>';
+}
+
+function setPlayIcon(playing) {
+  document.getElementById('icon-play').style.display  = playing ? 'none' : '';
+  document.getElementById('icon-pause').style.display = playing ? ''     : 'none';
+}
+
+function loadTrack(index, autoplay) {
+  currentTrackIndex = index;
+  document.getElementById('yt-fallback').innerHTML = '';
+  setActiveTrackUI(index);
+  var t = TRACKS[index];
+
+  // draw with cached art, then re-draw if a fresh fetch arrives
+  drawVinyl(t.art, t.title, t.artist, artworkCache[artKey(t.artist, t.title)] || null);
+  fetchArtwork(t.artist, t.title, function(img) {
+    if (currentTrackIndex === index) drawVinyl(t.art, t.title, t.artist, img);
+  });
+
+  if (!ytReady || !ytPlayer) {
+    pendingLoad = function() { loadTrack(index, autoplay); };
+    return;
+  }
+  if (autoplay) ytPlayer.loadVideoById(t.ytId);
+  else          ytPlayer.cueVideoById(t.ytId);
+}
+
+function togglePlay() {
+  if (!ytReady || !ytPlayer) return;
+  if (isPlaying) ytPlayer.pauseVideo();
+  else           ytPlayer.playVideo();
+}
+
+function prevTrack() {
+  loadTrack((currentTrackIndex - 1 + TRACKS.length) % TRACKS.length, isPlaying);
+}
+
+function nextTrack() {
+  loadTrack((currentTrackIndex + 1) % TRACKS.length, true);
+}
+
+document.getElementById('btn-play').addEventListener('click', togglePlay);
+document.getElementById('btn-prev').addEventListener('click', prevTrack);
+document.getElementById('btn-next').addEventListener('click', nextTrack);
+vinylCanvas.addEventListener('click', togglePlay);
+
+var progressWrap = document.getElementById('progress-wrap');
+var progressFill = document.getElementById('progress-fill');
+
+progressWrap.addEventListener('click', function(e) {
+  if (!ytPlayer || !ytReady) return;
+  try {
+    var rect = progressWrap.getBoundingClientRect();
+    var pct  = (e.clientX - rect.left) / rect.width;
+    var dur  = ytPlayer.getDuration();
+    if (dur > 0) ytPlayer.seekTo(pct * dur, true);
+  } catch (ex) {}
+});
+
+function fmt(s) {
+  if (!s || isNaN(s)) return '0:00';
+  return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+}
+
+function startProgressPoll() {
+  setInterval(function() {
+    if (!ytPlayer || !ytReady) return;
+    try {
+      var cur = ytPlayer.getCurrentTime();
+      var dur = ytPlayer.getDuration();
+      if (dur > 0) {
+        progressFill.style.width = (cur / dur * 100) + '%';
+        document.getElementById('time-cur').textContent = fmt(cur);
+        document.getElementById('time-tot').textContent = fmt(dur);
+      }
+    } catch (ex) {}
+  }, 500);
+}
+
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(s);
+})();
+
+// ── FADE-UP SCROLL OBSERVER ───────────────────────────────────────────────
+
+var fadeObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      fadeObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-up:not(.visible)').forEach(function(el) {
+  fadeObserver.observe(el);
+});
+
+// ── NAV SECTION OBSERVER ──────────────────────────────────────────────────
+
+var navLinks = document.querySelectorAll('.nav-link');
+var sections = document.querySelectorAll('section[id]');
+
+var sectionObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      var id = entry.target.id;
+      navLinks.forEach(function(a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(function(s) { sectionObserver.observe(s); });
+
+navLinks.forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+
+drawVinyl(TRACKS[0].art, TRACKS[0].title, TRACKS[0].artist, null);
+setActiveTrackUI(0);
+prefetchArtwork();
+fetchArtwork(TRACKS[0].artist, TRACKS[0].title, function(img) {
+  if (currentTrackIndex === 0) drawVinyl(TRACKS[0].art, TRACKS[0].title, TRACKS[0].artist, img);
+});
+</script>
+</body>
+</html>
